@@ -2,7 +2,7 @@
   <head>
     <script src="jquery-1.11.3.min.js"></script>
     <script>
-	var ws = new WebSocket("ws://192.168.5.20:4567");
+	var ws = new WebSocket("ws://192.168.5.20:4567/ws");
 	ws.onopen = function(evt){
 		$("#log").text("Opening WebSocket");
 	}

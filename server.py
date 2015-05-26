@@ -4,7 +4,7 @@ import tornado.httpserver
 import tornado.websocket
 import tornado.ioloop
 import tornado.web
-from tornado import web
+from tornado import web, websocket
 
 import datetime
 import json
@@ -22,15 +22,15 @@ GPIO.setup(13, GPIO.OUT)
 GPIO.setup(15, GPIO.OUT)
 
 
-class MainHandler(tornado.web.RequestHandler):
-	@tornado.web.asynchronous
-	def get(self):
-		try:
-			with open(os.path.join(root, 'index.html'), 'r') as f:
-				self.write(f.read())
-		except IOError as e:
-			self.write("404: Not found")
-		self.finish()
+class SocketHandler(websocket.WebSocketHandler):
+#	@tornado.web.asynchronous
+#	def get(self):
+#		try:
+#			with open(os.path.join(root, 'index.html'), 'r') as f:
+#				self.write(f.read())
+#		except IOError as e:
+#			self.write("404: Not found")
+#		self.finish()
 	def open(self):
 		self.connected = True
 		print "New Connection"
@@ -42,7 +42,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 	def on_message(self, message):
 		print "Incoming ", message
-		self.write_message(messge)
+		self.write_message(message)
 
 	def on_close(self):
 		self.connected = False
@@ -52,9 +52,14 @@ class MainHandler(tornado.web.RequestHandler):
 			print "in timeout looooop"
 			tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=1), self.timeout_loop)
 
+class IndexHandler(web.RequestHandler):
+    def get(self):
+        self.render("index.html")
+
 
 app = tornado.web.Application([
-	(r"/", MainHandler),
+	(r"/", IndexHandler),
+	(r"/ws", SocketHandler),
 	(r"/(.*)", web.StaticFileHandler, dict(path=root)),	
 ])
 
