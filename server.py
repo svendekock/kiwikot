@@ -88,7 +88,7 @@ class SocketHandler(websocket.WebSocketHandler):
 		if self.connected:
 			print "in timeout looooop"
 			tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=1), self.timeout_loop)
-	def control():
+	def control(self):
 		# Set ENA and ENB to high to enable stepper
 
 		GPIO.output(enable_a, True)
